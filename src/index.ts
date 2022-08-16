@@ -7,13 +7,18 @@ type CompProps = {
   context: CanvasRenderingContext2D;
 };
 
-type Comp = {
-  draw: () => void;
+type Comp<DrawOptions> = {
+  draw: (options: DrawOptions) => void;
 };
 
-function TextComp(text: string, { context }: CompProps): Comp {
+type TextComp = Comp<{
+  size: number;
+}>;
+
+function TextComp(text: string, { context }: CompProps): TextComp {
   return {
-    draw: function () {
+    draw: function ({ size }) {
+      context.font = `${size}px arial`;
       context.fillText(text, 100, 100);
     },
   };
@@ -24,13 +29,15 @@ const context2D = (
 ).getContext('2d')!;
 
 const menuScene: Scene<{
-  title: Comp;
+  title: TextComp;
 }> = {
-  title: TextComp('Hello, World!', {
+  title: TextComp('Press space', {
     context: context2D,
   }),
   draw: function () {
-    this.title.draw();
+    this.title.draw({
+      size: 32,
+    });
   },
   update: function () {},
 };
