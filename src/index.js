@@ -1,5 +1,12 @@
 const context = document.getElementById('g').getContext('2d');
 
+function getRandomPosition() {
+  return {
+    x: Math.floor(Math.random() * 600),
+    y: Math.floor(Math.random() * 600),
+  };
+}
+
 function makeText(context) {
   return {
     text: '',
@@ -30,6 +37,7 @@ function makeTombstone(context) {
     },
     draw: function () {
       context.fillStyle = 'gray';
+      context.fillRect(this.x, this.y, 32, 32);
     },
   };
 }
@@ -37,14 +45,25 @@ function makeTombstone(context) {
 const scene = {
   enemies: 0,
   zombies: 0,
-  tombstones: [],
+  tombstones: Array(5)
+    .fill()
+    .map(() => {
+      const tombStone = makeTombstone(context);
+      const { x, y } = getRandomPosition();
+      tombStone.x = x;
+      tombStone.y = y;
+      return tombStone;
+    }),
   enemiesText: makeText(context),
   zombiesText: makeText(context),
   update: function () {
     this.enemiesText.update(`Enemies: ${this.enemies}`, 16, 10, 20);
-    this.zombiesText.update(`Zombies ${this.zombies}`, 16, 10, 64);
+    this.zombiesText.update(`Zombies ${this.zombies}`, 16, 10, 40);
   },
   draw: function () {
+    this.tombstones.forEach((tombStone) => {
+      tombStone.draw();
+    });
     this.enemiesText.draw();
     this.zombiesText.draw();
   },
