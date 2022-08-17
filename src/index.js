@@ -37,7 +37,7 @@ const scene = {
 
 function main() {
   context.fillStyle = 'green';
-  context.fillRect(0, 0, 400, 800);
+  context.fillRect(0, 0, 600, 600);
   scene.update();
   scene.draw();
   requestAnimationFrame(main);
