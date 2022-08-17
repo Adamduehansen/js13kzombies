@@ -20,9 +20,24 @@ function makeText(context) {
   };
 }
 
+function makeTombstone(context) {
+  return {
+    x: 0,
+    y: 0,
+    update: function () {
+      this.x = x;
+      this.y = y;
+    },
+    draw: function () {
+      context.fillStyle = 'gray';
+    },
+  };
+}
+
 const scene = {
   enemies: 0,
   zombies: 0,
+  tombstones: [],
   enemiesText: makeText(context),
   zombiesText: makeText(context),
   update: function () {
