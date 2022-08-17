@@ -9,7 +9,7 @@ function getRandomPosition() {
   };
 }
 
-function makeText(context) {
+function createText(context) {
   return {
     text: '',
     size: 32,
@@ -29,7 +29,7 @@ function makeText(context) {
   };
 }
 
-function makeTombstone(context) {
+function createTombstone(context) {
   return {
     x: 0,
     y: 0,
@@ -44,10 +44,10 @@ function makeTombstone(context) {
   };
 }
 
-function makePlayer(context) {
+function createPlayer(context) {
   return {
-    x: 100,
-    y: 100,
+    x: 0,
+    y: 0,
     update: function (x, y) {
       this.x = x;
       this.y = y;
@@ -65,23 +65,22 @@ const scene = {
   tombstones: Array(5)
     .fill()
     .map(() => {
-      const tombStone = makeTombstone(context);
+      const tombStone = createTombstone(context);
       const { x, y } = getRandomPosition();
       tombStone.x = x;
       tombStone.y = y;
       return tombStone;
     }),
-  player: makePlayer(context),
-  enemiesText: makeText(context),
-  zombiesText: makeText(context),
+  player: createPlayer(context),
+  enemiesText: createText(context),
+  zombiesText: createText(context),
   update: function () {
     this.enemiesText.update(`Enemies: ${this.enemies}`, 16, 10, 20);
     this.zombiesText.update(`Zombies ${this.zombies}`, 16, 10, 40);
+    this.player.update(100, 100);
   },
   draw: function () {
-    this.tombstones.forEach((tombStone) => {
-      tombStone.draw();
-    });
+    this.tombstones.forEach((tombStone) => tombStone.draw());
     this.player.draw();
     this.enemiesText.draw();
     this.zombiesText.draw();
