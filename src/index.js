@@ -1,4 +1,6 @@
-const context = document.getElementById('g').getContext('2d');
+// Could make this a 'var' instead to save function arguments.
+const canvas = document.getElementById('g');
+const context = canvas.getContext('2d');
 
 function getRandomPosition() {
   return {
@@ -42,6 +44,21 @@ function makeTombstone(context) {
   };
 }
 
+function makePlayer(context) {
+  return {
+    x: 100,
+    y: 100,
+    update: function (x, y) {
+      this.x = x;
+      this.y = y;
+    },
+    draw: function () {
+      context.fillStyle = 'red';
+      context.fillRect(this.x, this.y, 32, 32);
+    },
+  };
+}
+
 const scene = {
   enemies: 0,
   zombies: 0,
@@ -54,6 +71,7 @@ const scene = {
       tombStone.y = y;
       return tombStone;
     }),
+  player: makePlayer(context),
   enemiesText: makeText(context),
   zombiesText: makeText(context),
   update: function () {
@@ -64,6 +82,7 @@ const scene = {
     this.tombstones.forEach((tombStone) => {
       tombStone.draw();
     });
+    this.player.draw();
     this.enemiesText.draw();
     this.zombiesText.draw();
   },
