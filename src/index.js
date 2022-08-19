@@ -61,12 +61,7 @@ function createPlayer(context) {
 const scene = {
   enemies: 0,
   zombies: 0,
-  cursors: {
-    up: false,
-    right: false,
-    down: false,
-    left: false,
-  },
+  pressedKeys: {},
   tombstones: Array(5)
     .fill()
     .map(() => {
@@ -83,12 +78,19 @@ const scene = {
     this.enemiesText.update(`Enemies: ${this.enemies}`, 16, 10, 20);
     this.zombiesText.update(`Zombies ${this.zombies}`, 16, 10, 40);
     const { x, y } = this.player;
-    const newPlayerX = this.cursors.left
-      ? x - 5
-      : this.cursors.right
-      ? x + 5
-      : x;
-    this.player.update(newPlayerX, 100);
+    let newPlayerX = x;
+    let newPlayerY = y;
+    if (this.pressedKeys['ArrowLeft']) {
+      newPlayerX = x - 5;
+    } else if (this.pressedKeys['ArrowRight']) {
+      newPlayerX = x + 5;
+    }
+    if (this.pressedKeys['ArrowUp']) {
+      newPlayerY = y - 5;
+    } else if (this.pressedKeys['ArrowDown']) {
+      newPlayerY = y + 5;
+    }
+    this.player.update(newPlayerX, newPlayerY);
   },
   draw: function () {
     this.tombstones.forEach((tombStone) => tombStone.draw());
@@ -99,22 +101,11 @@ const scene = {
 };
 
 document.addEventListener('keydown', (event) => {
-  // Maybe switch takes less bytes
-  if (event.code === 'ArrowLeft') {
-    scene.cursors.left = true;
-  }
-  if (event.code === 'ArrowRight') {
-    scene.cursors.right = true;
-  }
+  scene.pressedKeys[event.code] = true;
 });
 
 document.addEventListener('keyup', (event) => {
-  if (event.code === 'ArrowLeft') {
-    scene.cursors.left = false;
-  }
-  if (event.code === 'ArrowRight') {
-    scene.cursors.right = false;
-  }
+  scene.pressedKeys[event.code] = false;
 });
 
 function main() {
