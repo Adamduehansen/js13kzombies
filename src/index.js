@@ -1,6 +1,5 @@
 // Could make this a 'var' instead to save function arguments.
-const canvas = document.getElementById('g');
-const context = canvas.getContext('2d');
+const context = document.getElementById('g').getContext('2d');
 
 function getRandomPosition() {
   return {
@@ -46,8 +45,8 @@ function createTombstone(context) {
 
 function createPlayer(context) {
   return {
-    x: 0,
-    y: 0,
+    x: 100,
+    y: 100,
     update: function (x, y) {
       this.x = x;
       this.y = y;
@@ -62,6 +61,12 @@ function createPlayer(context) {
 const scene = {
   enemies: 0,
   zombies: 0,
+  cursors: {
+    up: false,
+    right: false,
+    down: false,
+    left: false,
+  },
   tombstones: Array(5)
     .fill()
     .map(() => {
@@ -77,7 +82,13 @@ const scene = {
   update: function () {
     this.enemiesText.update(`Enemies: ${this.enemies}`, 16, 10, 20);
     this.zombiesText.update(`Zombies ${this.zombies}`, 16, 10, 40);
-    this.player.update(100, 100);
+    const { x, y } = this.player;
+    const newPlayerX = this.cursors.left
+      ? x - 5
+      : this.cursors.right
+      ? x + 5
+      : x;
+    this.player.update(newPlayerX, 100);
   },
   draw: function () {
     this.tombstones.forEach((tombStone) => tombStone.draw());
@@ -86,6 +97,25 @@ const scene = {
     this.zombiesText.draw();
   },
 };
+
+document.addEventListener('keydown', (event) => {
+  // Maybe switch takes less bytes
+  if (event.code === 'ArrowLeft') {
+    scene.cursors.left = true;
+  }
+  if (event.code === 'ArrowRight') {
+    scene.cursors.right = true;
+  }
+});
+
+document.addEventListener('keyup', (event) => {
+  if (event.code === 'ArrowLeft') {
+    scene.cursors.left = false;
+  }
+  if (event.code === 'ArrowRight') {
+    scene.cursors.right = false;
+  }
+});
 
 function main() {
   context.fillStyle = 'green';
