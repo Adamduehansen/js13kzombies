@@ -1,12 +1,9 @@
-// Could make this a 'var' instead to save function arguments.
+/**
+ IMPROVEMENTS TO MINIMIZE SIZE
+ - Could make context a 'var' instead to save function arguments.
+ - Maybe create a higher order function with shared properties (x, y...) for components.
+*/
 const context = document.getElementById('g').getContext('2d');
-
-function getRandomPosition() {
-  return {
-    x: Math.floor(Math.random() * 600),
-    y: Math.floor(Math.random() * 600),
-  };
-}
 
 function createText(context) {
   return {
@@ -45,8 +42,8 @@ function createTombstone(context) {
 
 function createPlayer(context) {
   return {
-    x: 100,
-    y: 100,
+    x: 284,
+    y: 284,
     update: function (x, y) {
       this.x = x;
       this.y = y;
@@ -58,37 +55,47 @@ function createPlayer(context) {
   };
 }
 
+function createEnemy(context) {
+  // An enemy will spawn at a point outside the canvas and then move to a point
+  // inside the canvas and stay there. It will shoot a bullet at a interval
+  // towards the current position of the player. If a enemy is bitten it will
+  // either die or turn into a zombie.
+  return {
+    x: 0,
+    y: 0,
+  };
+}
+
 const scene = {
-  enemies: 0,
-  zombies: 0,
+  enemies: [createEnemy()],
+  zombies: [],
   pressedKeys: {},
   tombstones: Array(5)
     .fill()
     .map(() => {
       const tombStone = createTombstone(context);
-      const { x, y } = getRandomPosition();
-      tombStone.x = x;
-      tombStone.y = y;
+      tombStone.x = Math.floor(Math.random() * 600);
+      tombStone.y = Math.floor(Math.random() * 600);
       return tombStone;
     }),
   player: createPlayer(context),
   enemiesText: createText(context),
   zombiesText: createText(context),
   update: function () {
-    this.enemiesText.update(`Enemies: ${this.enemies}`, 16, 10, 20);
-    this.zombiesText.update(`Zombies ${this.zombies}`, 16, 10, 40);
+    this.enemiesText.update(`Enemies: ${this.enemies.length}`, 16, 10, 20);
+    this.zombiesText.update(`Zombies ${this.zombies.length}`, 16, 10, 40);
     const { x, y } = this.player;
     let newPlayerX = x;
     let newPlayerY = y;
     if (this.pressedKeys['ArrowLeft']) {
-      newPlayerX = x - 5;
+      newPlayerX = x - 1;
     } else if (this.pressedKeys['ArrowRight']) {
-      newPlayerX = x + 5;
+      newPlayerX = x + 1;
     }
     if (this.pressedKeys['ArrowUp']) {
-      newPlayerY = y - 5;
+      newPlayerY = y - 1;
     } else if (this.pressedKeys['ArrowDown']) {
-      newPlayerY = y + 5;
+      newPlayerY = y + 1;
     }
     this.player.update(newPlayerX, newPlayerY);
   },
@@ -99,6 +106,10 @@ const scene = {
     this.zombiesText.draw();
   },
 };
+
+// setInterval(() => {
+//   scene.enemies.push(createEnemy(context));
+// }, 1000);
 
 document.addEventListener('keydown', (event) => {
   scene.pressedKeys[event.code] = true;
