@@ -56,18 +56,40 @@ function createPlayer(context) {
 }
 
 function createEnemy(context) {
-  // An enemy will spawn at a point outside the canvas and then move to a point
-  // inside the canvas and stay there. It will shoot a bullet at a interval
+  // An enemy will spawn at random a point outside the canvas and then move to a
+  // point inside the canvas and stay there. It will shoot a bullet at a interval
   // towards the current position of the player. If a enemy is bitten it will
   // either die or turn into a zombie.
+  const x = !!Math.floor(Math.random() * 2) ? 0 : 600;
+  const y = -50;
+  const destination = {
+    x: Math.floor(Math.random() * 600),
+    y: Math.floor(Math.random() * 600),
+  };
   return {
-    x: 0,
-    y: 0,
+    x: x,
+    y: y,
+    update: function () {
+      if (this.x < destination.x) {
+        this.x += 1;
+      } else if (this.x > destination.x) {
+        this.x -= 1;
+      }
+      if (this.y < destination.y) {
+        this.y += 1;
+      } else if (this.y > destination.y) {
+        this.y -= 1;
+      }
+    },
+    draw: function () {
+      context.fillStyle = 'yellow';
+      context.fillRect(this.x, this.y, 32, 32);
+    },
   };
 }
 
 const scene = {
-  enemies: [createEnemy()],
+  enemies: [],
   zombies: [],
   pressedKeys: {},
   tombstones: Array(5)
@@ -84,6 +106,7 @@ const scene = {
   update: function () {
     this.enemiesText.update(`Enemies: ${this.enemies.length}`, 16, 10, 20);
     this.zombiesText.update(`Zombies ${this.zombies.length}`, 16, 10, 40);
+    this.enemies.forEach((enemy) => enemy.update());
     const { x, y } = this.player;
     let newPlayerX = x;
     let newPlayerY = y;
@@ -101,15 +124,16 @@ const scene = {
   },
   draw: function () {
     this.tombstones.forEach((tombStone) => tombStone.draw());
+    this.enemies.forEach((enemy) => enemy.draw());
     this.player.draw();
     this.enemiesText.draw();
     this.zombiesText.draw();
   },
 };
 
-// setInterval(() => {
-//   scene.enemies.push(createEnemy(context));
-// }, 1000);
+setInterval(() => {
+  scene.enemies.push(createEnemy(context));
+}, 1000);
 
 document.addEventListener('keydown', (event) => {
   scene.pressedKeys[event.code] = true;
