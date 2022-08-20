@@ -60,15 +60,13 @@ function createEnemy(context) {
   // point inside the canvas and stay there. It will shoot a bullet at a interval
   // towards the current position of the player. If a enemy is bitten it will
   // either die or turn into a zombie.
-  const x = !!Math.floor(Math.random() * 2) ? 0 : 600;
-  const y = -50;
   const destination = {
     x: Math.floor(Math.random() * 600),
     y: Math.floor(Math.random() * 600),
   };
   return {
-    x: x,
-    y: y,
+    x: !!Math.floor(Math.random() * 2) ? 0 : 600,
+    y: Math.floor(Math.random() * 600),
     update: function () {
       if (this.x < destination.x) {
         this.x += 1;
