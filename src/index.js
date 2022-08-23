@@ -1,9 +1,8 @@
 /**
  IMPROVEMENTS TO MINIMIZE SIZE
- - Could make context a 'var' instead to save function arguments.
  - Maybe create a higher order function with shared properties (x, y...) for components.
 */
-const context = document.getElementById('g').getContext('2d');
+var context = document.getElementById('g').getContext('2d');
 
 function createText(context) {
   return {
@@ -25,7 +24,7 @@ function createText(context) {
   };
 }
 
-function createTombstone(context) {
+function createTombstone() {
   return {
     x: 0,
     y: 0,
@@ -40,7 +39,7 @@ function createTombstone(context) {
   };
 }
 
-function createPlayer(context) {
+function createPlayer() {
   return {
     x: 284,
     y: 284,
@@ -55,7 +54,7 @@ function createPlayer(context) {
   };
 }
 
-function createEnemy(context) {
+function createEnemy() {
   // An enemy will spawn at random a point outside the canvas and then move to a
   // point inside the canvas and stay there. It will shoot a bullet at a interval
   // towards the current position of the player. If a enemy is bitten it will
@@ -64,7 +63,8 @@ function createEnemy(context) {
     x: Math.floor(Math.random() * 600),
     y: Math.floor(Math.random() * 600),
   };
-  return {
+
+  const enemy = {
     x: !!Math.floor(Math.random() * 2) ? 0 : 600,
     y: Math.floor(Math.random() * 600),
     update: function () {
@@ -83,12 +83,40 @@ function createEnemy(context) {
       context.fillStyle = 'yellow';
       context.fillRect(this.x, this.y, 32, 32);
     },
+    turn: function () {
+      clearInterval(intervalId);
+    },
+  };
+
+  const intervalId = setInterval(() => {
+    scene.bullets.push(createBullet(enemy.x, enemy.y));
+  }, 2000);
+
+  return enemy;
+}
+
+function createBullet(spawnX, spawnY) {
+  const { x, y } = scene.player;
+  const dx = spawnX < x ? 2 : -2;
+  const dy = spawnY < y ? 2 : -2;
+  return {
+    x: spawnX,
+    y: spawnY,
+    update: function () {
+      this.x += dx;
+      this.y += dy;
+    },
+    draw: function () {
+      context.fillStyle = 'blue';
+      context.fillRect(this.x, this.y, 10, 10);
+    },
   };
 }
 
 const scene = {
   enemies: [],
   zombies: [],
+  bullets: [],
   pressedKeys: {},
   tombstones: Array(5)
     .fill()
@@ -105,6 +133,7 @@ const scene = {
     this.enemiesText.update(`Enemies: ${this.enemies.length}`, 16, 10, 20);
     this.zombiesText.update(`Zombies ${this.zombies.length}`, 16, 10, 40);
     this.enemies.forEach((enemy) => enemy.update());
+    this.bullets.forEach((bullet) => bullet.update());
     const { x, y } = this.player;
     let newPlayerX = x;
     let newPlayerY = y;
@@ -123,6 +152,7 @@ const scene = {
   draw: function () {
     this.tombstones.forEach((tombStone) => tombStone.draw());
     this.enemies.forEach((enemy) => enemy.draw());
+    this.bullets.forEach((bullet) => bullet.draw());
     this.player.draw();
     this.enemiesText.draw();
     this.zombiesText.draw();
