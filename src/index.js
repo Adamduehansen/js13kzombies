@@ -90,7 +90,7 @@ function createEnemy() {
 
   const intervalId = setInterval(() => {
     scene.bullets.push(createBullet(enemy.x, enemy.y));
-  }, 2000);
+  }, 3000);
 
   return enemy;
 }
@@ -129,11 +129,7 @@ const scene = {
   player: createPlayer(context),
   enemiesText: createText(context),
   zombiesText: createText(context),
-  update: function () {
-    this.enemiesText.update(`Enemies: ${this.enemies.length}`, 16, 10, 20);
-    this.zombiesText.update(`Zombies ${this.zombies.length}`, 16, 10, 40);
-    this.enemies.forEach((enemy) => enemy.update());
-    this.bullets.forEach((bullet) => bullet.update());
+  updatePlayer: function () {
     const { x, y } = this.player;
     let newPlayerX = x;
     let newPlayerY = y;
@@ -148,6 +144,13 @@ const scene = {
       newPlayerY = y + 1;
     }
     this.player.update(newPlayerX, newPlayerY);
+  },
+  update: function () {
+    this.enemiesText.update(`Enemies: ${this.enemies.length}`, 16, 10, 20);
+    this.zombiesText.update(`Zombies ${this.zombies.length}`, 16, 10, 40);
+    this.enemies.forEach((enemy) => enemy.update());
+    this.bullets.forEach((bullet) => bullet.update());
+    this.updatePlayer();
   },
   draw: function () {
     this.tombstones.forEach((tombStone) => tombStone.draw());
