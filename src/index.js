@@ -108,7 +108,7 @@ function createBullet(spawnX, spawnY) {
     },
     draw: function () {
       context.fillStyle = 'blue';
-      context.fillRect(this.x, this.y, 10, 10);
+      context.fillRect(this.x, this.y, 5, 5);
     },
   };
 }
@@ -118,6 +118,7 @@ const scene = {
   zombies: [],
   bullets: [],
   pressedKeys: {},
+  gameOver: false,
   tombstones: Array(5)
     .fill()
     .map(() => {
@@ -146,6 +147,19 @@ const scene = {
     this.player.update(newPlayerX, newPlayerY);
   },
   update: function () {
+    if (this.gameOver) {
+      return;
+    }
+    this.bullets.forEach((bullet) => {
+      if (
+        bullet.x > this.player.x &&
+        bullet.x < this.player.x + 32 &&
+        bullet.y > this.player.y &&
+        bullet.y < this.player.y + 32
+      ) {
+        this.gameOver = true;
+      }
+    });
     this.enemiesText.update(`Enemies: ${this.enemies.length}`, 16, 10, 20);
     this.zombiesText.update(`Zombies ${this.zombies.length}`, 16, 10, 40);
     this.enemies.forEach((enemy) => enemy.update());
