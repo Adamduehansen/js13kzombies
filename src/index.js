@@ -84,6 +84,7 @@ function createEnemy() {
       context.fillRect(this.x, this.y, 32, 32);
     },
     turn: function () {
+      console.log('Turning!');
       clearInterval(intervalId);
     },
   };
@@ -147,9 +148,9 @@ const scene = {
     this.player.update(newPlayerX, newPlayerY);
   },
   update: function () {
-    if (this.gameOver) {
-      return;
-    }
+    // if (this.gameOver) {
+    //   return;
+    // }
     this.bullets.forEach((bullet) => {
       if (
         bullet.x > this.player.x &&
@@ -162,7 +163,18 @@ const scene = {
     });
     this.enemiesText.update(`Enemies: ${this.enemies.length}`, 16, 10, 20);
     this.zombiesText.update(`Zombies ${this.zombies.length}`, 16, 10, 40);
-    this.enemies.forEach((enemy) => enemy.update());
+    this.enemies.forEach((enemy) => {
+      enemy.update();
+      if (
+        this.player.x + 32 > enemy.x &&
+        this.player.x < enemy.x + 32 &&
+        this.player.y + 32 > enemy.y &&
+        this.player.y < enemy.y + 32 &&
+        this.pressedKeys['Space']
+      ) {
+        enemy.turn();
+      }
+    });
     this.bullets.forEach((bullet) => bullet.update());
     this.updatePlayer();
   },
